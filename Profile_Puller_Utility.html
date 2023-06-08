@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" id="userName" /> 
+    <button onclick="fetchUser()"> Pull </button>
+
+    <div id="output">
+        <img id="image" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" />
+        <div id="followers"></div>
+        <table id ="followers_table" border="1">
+            <tr><td>userid</td><td>Image</td><td>URL</td></tr>
+        </table>
+        <!-- Build a table from java script  -->
+    </div>
+
+    <script type="text/javascript">
+
+        function fetchUser(){
+            let user = document.getElementById('userName').value;
+            if(!user){
+                alert(`User is blank or undefined !`);
+            }
+            else{
+
+                // syntax ==> promise in java script ?
+                // what it does     
+                fetch(`https://api.github.com/users/${user}`)
+                .then(response=>response.json())
+                .then(json=>{
+                    document.getElementById('followers').innerHTML=`<span>followers : ${json.followers}</span>`  
+                    document.getElementById('image').removeAttribute("src")
+                    document.getElementById('image').setAttribute("src",json.avatar_url)
+                    fetch(`https://api.github.com/users/${user}/followers`)
+                    .then(response=>response.json())
+                    .then(json=>{
+                        console.log(json)
+                        for(let i = 0; i < json.length; i++) {
+                        let obj = json[i];
+                        console.log(obj.login);
+                        console.log(obj.avatar_url);
+                        console.log(obj.html_url);
+}
+                        // we will build the table !
+                        // const tbl = document.createElement("table");
+                        const tb1Body = document.getElementById('followers_table');
+                        // const tblBody = document.createElement("tbody");
+
+                        // creating all cells
+                        for (let i = 0; i < json.length; i++) {
+                            // creates a table row
+                            const row = document.createElement("tr");
+
+                            let obj = json[i];
+                            // Create a <td> element and a text node, make the text
+                            // node the contents of the <td>, and put the <td> at
+                            // the end of the table row
+                            const login_cell = document.createElement("td");
+                            const login_cell_text = document.createTextNode(obj.login);
+                            login_cell.appendChild(login_cell_text);
+                            row.appendChild(login_cell);
+
+                            const avatar_url_cell = document.createElement("td");
+                            let img = document.createElement('img');
+                            img.src = obj.avatar_url;
+                            img.height = "100";
+                            const avatar_url_cell_text = img;
+                            avatar_url_cell.appendChild(avatar_url_cell_text);
+                            row.appendChild(avatar_url_cell);
+
+                            const html_url_cell = document.createElement("td");
+                            const element = document.createElement("a");
+                            element.setAttribute("href", obj.html_url);
+                            element.appendChild(document.createTextNode(obj.html_url));
+                            const html_url_cell_text = element;
+                            
+                            html_url_cell.appendChild(html_url_cell_text);
+                            row.appendChild(html_url_cell);
+                            
+
+                            // add the row to the end of the table body
+                            tb1Body.appendChild(row);
+                        }
+
+                        // put the <tbody> in the <table>
+                        // tbl.appendChild(tblBody);
+                        // appends <table> into <body>
+                        // document.body.appendChild(tbl);
+                        // sets the border attribute of tbl to '2'
+                        // tbl.setAttribute("border", "2");
+                    })
+                    .catch(err=> console.log(err))
+                    console.log(json)
+                })
+                .catch(err=> console.log(err))
+            }
+            
+        }
+    </script>
+
+</body>
+</html>
